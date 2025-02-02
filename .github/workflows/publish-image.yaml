@@ -1,4 +1,4 @@
-name: test
+name: caddy_deploy
 on:
   [workflow_dispatch]
 
