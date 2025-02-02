@@ -1,7 +1,4 @@
-FROM alpine:latest
-RUN apk add --no-cache bash
-WORKDIR /app
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-
-ENTRYPOINT ["/app/entrypoint.sh"]
+FROM caddy:2.8-builder AS builder
+RUN xcaddy build --with github.com/caddy-dns/cloudflare --with github.com/caddy-dns/duckdns
+FROM caddy:latest
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
