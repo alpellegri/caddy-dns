@@ -1,0 +1,28 @@
+name: ghcr
+# run-name: ${{ github.actor }} is learning GitHub Actions
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './store'
+    permissions:
+      contents: read
+    steps:
+      - name: checkout
+        uses: action/checkout@v4
+        with:
+          repository: alpellegri/docker-test
+          token: ${{ secrets.GH_PAT }}
+          ref: master
+      - name: build and push
+        run: |
+          docker login --username alpellegri --password ${{ secrets.GH_PAT }}
+          docker build . --tag ghcr.io/alpellegri/test:latest
+          docher push ghcr.io/alpellegri/test:latest
