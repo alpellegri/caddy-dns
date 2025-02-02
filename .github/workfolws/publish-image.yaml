@@ -1,28 +1,22 @@
-name: ghcr
-# run-name: ${{ github.actor }} is learning GitHub Actions
+name: test
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  [workflow_dispatch]
 
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: './store'
     permissions:
       contents: read
     steps:
       - name: checkout
-        uses: action/checkout@v4
+        uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          repository: alpellegri/docker-test
-          token: ${{ secrets.GH_PAT }}
-          ref: master
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
       - name: build and push
         run: |
-          docker login --username alpellegri --password ${{ secrets.GH_PAT }}
-          docker build . --tag ghcr.io/alpellegri/test:latest
-          docher push ghcr.io/alpellegri/test:latest
+          docker build . --tag ghcr.io/${{ github.repository_owner }}/caddy-dns:latest
+          docker push ghcr.io/${{ github.repository_owner }}/caddy-dns:latest
